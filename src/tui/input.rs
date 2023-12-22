@@ -31,8 +31,13 @@ pub fn handle_quit(
     mut exit_writer: EventWriter<AppExit>,
 ) {
     for event in input_reader.read() {
-        if event.0 == CrosstermEvent::Key(KeyEvent::new(KeyCode::Char('q'), KeyModifiers::ALT)) {
-            exit_writer.send(AppExit);
+        if let CrosstermEvent::Key(key_event) = event.0 {
+            if (key_event.modifiers == KeyModifiers::CONTROL
+                || key_event.modifiers == KeyModifiers::ALT)
+                && (key_event.code == KeyCode::Char('c') || key_event.code == KeyCode::Char('q'))
+            {
+                exit_writer.send(AppExit);
+            }
         }
     }
 }
