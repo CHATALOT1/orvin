@@ -13,7 +13,15 @@ fn main() {
 
     // Set up and run app
     App::new()
-        .add_plugins((MinimalPlugins, tui::TuiPlugin))
+        .add_plugins((
+            MinimalPlugins.set(ScheduleRunnerPlugin {
+                run_mode: bevy::app::RunMode::Loop {
+                    wait: Some(Duration::from_secs_f32(0.0005)),
+                },
+            }),
+            tui::TuiPlugin,
+            commands::CommandsPlugin,
+        ))
         .run();
 
     // Restore terminal before program execution finished
