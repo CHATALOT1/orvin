@@ -1,4 +1,5 @@
-use bevy::prelude::*;
+use bevy::{app::ScheduleRunnerPlugin, prelude::*};
+use std::time::Duration;
 
 mod net;
 mod tui;
@@ -20,7 +21,6 @@ fn main() {
                 },
             }),
             tui::TuiPlugin,
-            commands::CommandsPlugin,
         ))
         .run();
 
