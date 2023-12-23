@@ -7,7 +7,7 @@ use ratatui::{
     layout::Rect,
     prelude::*,
     style::Color,
-    widgets::{block::Title, Block, Borders, Paragraph},
+    widgets::{block::Title, Block, Borders, Paragraph, Wrap},
 };
 
 pub fn render_system(
@@ -36,26 +36,30 @@ fn render(frame: &mut Frame, input_state: &CommandInputState, cursor_visible: bo
             frame.render_widget(
                 Paragraph::new("window not large enough")
                     .alignment(Alignment::Center)
+                    .wrap(Wrap { trim: false })
                     .style(Style::new().red()),
                 frame_size,
             );
         } else {
-            let text = vec![
-                Line::from(""),
-                Line::from("window must be atleast 120x10"),
-                Line::from(""),
-                Line::from(format!(
-                    "current size is {0} x {1}",
-                    frame_size.width, frame_size.height
-                )),
-            ];
             frame.render_widget(
-                Paragraph::new(text)
-                    .alignment(Alignment::Center)
-                    .style(Style::new().red())
-                    .block(Block::new().borders(Borders::ALL).title(
-                        Title::from("window not large enough").alignment(Alignment::Center),
-                    )),
+                Paragraph::new(vec![
+                    "".into(),
+                    "window must be atleast 120x10".into(),
+                    "".into(),
+                    format!(
+                        "current size is {0} x {1}",
+                        frame_size.width, frame_size.height
+                    )
+                    .into(),
+                ])
+                .alignment(Alignment::Center)
+                .style(Style::new().red())
+                .wrap(Wrap { trim: false })
+                .block(
+                    Block::new()
+                        .borders(Borders::ALL)
+                        .title(Title::from("window not large enough").alignment(Alignment::Center)),
+                ),
                 frame_size,
             );
         }
