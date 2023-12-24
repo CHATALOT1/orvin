@@ -30,7 +30,8 @@ pub fn render_system(
 fn render(frame: &mut Frame, input_state: &CommandInputState, cursor_visible: bool) {
     let frame_size = frame.size();
 
-    // complain if window is too small, width requirement is the lowest resolution that all the help text still dislpays at
+    // Display error if window is too small
+    // (Width requirement is the lowest resolution that all the help text still displays at)
     if (frame_size.height < 10) | (frame_size.width < 120) {
         if frame_size.width < 30 {
             frame.render_widget(
