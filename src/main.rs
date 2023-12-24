@@ -18,6 +18,12 @@ fn main() {
                     .expect("System time should not be before the Unix Epoch")
             ),
         ))
+        .with_env_filter(
+            EnvFilter::builder()
+                .with_default_directive(LevelFilter::DEBUG.into())
+                .from_env_lossy(),
+        )
+        .with_ansi(false)
         .init();
 
     // Set up panic hook to restore terminal
