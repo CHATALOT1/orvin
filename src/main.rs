@@ -1,10 +1,25 @@
 use bevy::{app::ScheduleRunnerPlugin, prelude::*};
-use std::time::Duration;
+use std::time::{Duration, UNIX_EPOCH};
+use tracing_appender;
+use tracing_subscriber;
 
 mod net;
 mod tui;
 
 fn main() {
+    // Set up tracing subscriber
+    tracing_subscriber::fmt()
+        .with_writer(tracing_appender::rolling::never(
+            "logs",
+            format!(
+                "{:#?}.log",
+                std::time::SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .expect("System time should not be before the Unix Epoch")
+            ),
+        ))
+        .init();
+
     // Set up panic hook to restore terminal
     let original_hook = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |panic_info| {
