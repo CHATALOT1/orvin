@@ -4,7 +4,7 @@ use super::*;
 #[derive(Event)]
 pub enum CommandIssued {
     Command {
-        command: &'static Command,
+        command: &'static dyn Command,
         args: String,
     },
     Invalid {
@@ -16,7 +16,7 @@ pub fn log_issued_commands(mut reader: EventReader<CommandIssued>) {
     for event in reader.read() {
         match event {
             CommandIssued::Command { command, args } => {
-                debug!("Command '{}' with args '{}' issued.", command.name, args);
+                debug!("Command '{:?}' with args '{}' issued.", command, args);
             }
             CommandIssued::Invalid { text } => {
                 debug!("Invalid Command '{}' issued.", text);

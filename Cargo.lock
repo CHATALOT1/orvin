@@ -314,6 +314,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e1d90cd0b264dfdd8eb5bad0a2c217c1f88fa96a8573f40e7b12de23fb468f46"
 
 [[package]]
+name = "async-trait"
+version = "0.1.75"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fdf6721fb0140e4f897002dd086c06f6c27775df19cfe1fccb21181a48fd2c98"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.41",
+]
+
+[[package]]
 name = "atomic-waker"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3078,6 +3089,7 @@ dependencies = [
 name = "orvin"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "bevy",
  "crossterm",
  "futures",

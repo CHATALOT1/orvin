@@ -1,14 +1,16 @@
 //! General and specific code for every Command in the game. Not to be confused with Bevy Commands.
+use async_trait::async_trait;
 use bevy::prelude::*;
 use linkme::distributed_slice;
-use std::fmt;
+use std::fmt::{self, Debug};
 
 mod events;
 
 pub use events::*;
 
+/// Commands that are always available to run
 #[distributed_slice]
-pub static GENERAL_COMMANDS: [Command];
+pub static GLOBAL_COMMANDS: [&'static dyn Command];
 
 pub struct CommandsPlugin;
 impl Plugin for CommandsPlugin {
@@ -18,11 +20,24 @@ impl Plugin for CommandsPlugin {
     }
 }
 
-pub struct Command {
-    pub name: &'static str,
-    pub summary: &'static str,
-    pub execute:
-        fn(context: &CommandContext, args: String, world: &mut World) -> Result<(), CommandError>,
+/// A command that can be ran by a player. 'static requirement may be temporary.
+#[async_trait]
+pub trait Command: Send + Sync + 'static {
+    fn name(&self) -> &'static str;
+    fn summary(&self) -> &'static str;
+
+    async fn execute(
+        &self,
+        context: &CommandContext,
+        args: String,
+        world: &mut World,
+    ) -> Result<(), CommandError>;
+}
+
+impl Debug for dyn Command {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.name())
+    }
 }
 
 pub struct CommandContext {
@@ -43,20 +58,40 @@ impl From<fmt::Error> for CommandError {
     }
 }
 
-pub fn get_command(name: &str) -> Option<&'static Command> {
-    GENERAL_COMMANDS
+pub fn get_global_command(name: &str) -> Option<&'static dyn Command> {
+    GLOBAL_COMMANDS
         .iter()
-        .filter(|cmd| cmd.name == name)
-        .next()
+        .find(|cmd| cmd.name() == name)
+        .cloned()
+}
+
+// TODO: Proc macro for the below.
+
+#[cfg(feature = "test-command")]
+#[derive(Clone)]
+pub struct TestCommand;
+
+#[cfg(feature = "test-command")]
+#[async_trait]
+impl Command for TestCommand {
+    fn name(&self) -> &'static str {
+        "test"
+    }
+    fn summary(&self) -> &'static str {
+        "Temporary command for testing and building the commands system"
+    }
+
+    async fn execute(
+        &self,
+        context: &CommandContext,
+        args: String,
+        _world: &mut World,
+    ) -> Result<(), CommandError> {
+        context.output_append(&format!("Hello {}", args));
+        Ok(())
+    }
 }
 
 #[cfg(feature = "test-command")]
-#[distributed_slice(GENERAL_COMMANDS)]
-pub static TEST_COMMAND: Command = Command {
-    name: "test",
-    summary: "Temporary command for testing and building the commands system",
-    execute: |context, args, _| {
-        context.output_append(&format!("Hello {}", args));
-        Ok(())
-    },
-};
+#[distributed_slice(GLOBAL_COMMANDS)]
+static TEST_COMMAND: &'static dyn Command = &TestCommand;
