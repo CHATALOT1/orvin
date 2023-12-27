@@ -3085,6 +3085,7 @@ dependencies = [
  "lightyear",
  "linkme",
  "ratatui",
+ "serde",
  "tracing",
  "tracing-appender",
  "tracing-subscriber",
