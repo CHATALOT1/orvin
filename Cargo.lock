@@ -1140,9 +1140,9 @@ dependencies = [
 
 [[package]]
 name = "bitcode_lightyear_patch"
-version = "0.4.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "208b73e1b0458a30a9bfb50e60b90b717742c032f695e88d9b3fa12572cde50e"
+checksum = "8e567895f171f8b2e8baa85692dbe4a15e4c2d24413dd6bf82f029aca14a3f83"
 dependencies = [
  "bitcode_derive",
  "bitintr",
@@ -2593,9 +2593,9 @@ dependencies = [
 
 [[package]]
 name = "lightyear"
-version = "0.3.0"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a135f0cfc1158767dd9bf0a70dbe95c8f361a20a0da8b242cce9c0de47da1714"
+checksum = "4f7de71f9b69aee1618ee17e4bfac2564600c6ad9ac38204e70a68bb951b968e"
 dependencies = [
  "anyhow",
  "bevy",
@@ -2623,9 +2623,9 @@ dependencies = [
 
 [[package]]
 name = "lightyear_macros"
-version = "0.2.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "37f838c5767d5dcfade7b4690fb791a195344d4e9f893dab97ab2f24bf7e2a6f"
+checksum = "384295f6b5e3e20bda56c3fc5fb99a2c9fe12eac68fb2963e9b653a56d30cbba"
 dependencies = [
  "anyhow",
  "darling",

@@ -13,7 +13,7 @@ bevy = "0.12.1"
 crossterm = { version = "0.27.0", features = ["event-stream"] }
 futures = "0.3.29"
 itertools = "0.12.0"
-lightyear = "0.3.0"
+lightyear = "0.5.0"
 linkme = "0.3.20"
 ratatui = "0.25.0"
 tracing = "0.1.40"
