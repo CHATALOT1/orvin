@@ -39,8 +39,7 @@ pub fn render_system(
             } => Color::Green,
             CommandIssued::Invalid { text: _ } => Color::Red,
         };
-    }
-    if command_feedback.timer.finished() {
+    } else if command_feedback.timer.finished() {
         command_feedback.color = Color::default();
     };
 
@@ -65,41 +64,42 @@ fn render(
 ) {
     let frame_size = frame.size();
 
-    // Display error if window is too small
-    // (Width requirement is the lowest resolution that all the help text still displays at)
-    if (frame_size.height < 10) | (frame_size.width < 120) {
-        if frame_size.width < 30 {
-            frame.render_widget(
-                Paragraph::new("window not large enough")
-                    .alignment(Alignment::Center)
-                    .wrap(Wrap { trim: false })
-                    .style(Style::new().red()),
-                frame_size,
-            );
-        } else {
-            frame.render_widget(
-                Paragraph::new(vec![
-                    "".into(),
-                    "window must be atleast 120x10".into(),
-                    "".into(),
-                    format!(
-                        "current size is {0} x {1}",
-                        frame_size.width, frame_size.height
-                    )
-                    .into(),
-                ])
+    // Especially small
+    if frame_size.width < 30 {
+        frame.render_widget(
+            Paragraph::new("window not large enough")
                 .alignment(Alignment::Center)
-                .style(Style::new().red())
                 .wrap(Wrap { trim: false })
-                .block(
-                    Block::new()
-                        .borders(Borders::ALL)
-                        .title(Title::from("window not large enough").alignment(Alignment::Center)),
-                ),
-                frame_size,
-            );
-        }
-    } else {
+                .style(Style::new().red()),
+            frame_size,
+        );
+    }
+    // Not especially small, but still too small (text may not display properly)
+    else if (frame_size.height < 10) | (frame_size.width < 120) {
+        frame.render_widget(
+            Paragraph::new(vec![
+                "".into(),
+                "window must be atleast 120x10".into(),
+                "".into(),
+                format!(
+                    "current size is {0} x {1}",
+                    frame_size.width, frame_size.height
+                )
+                .into(),
+            ])
+            .alignment(Alignment::Center)
+            .style(Style::new().red())
+            .wrap(Wrap { trim: false })
+            .block(
+                Block::new()
+                    .borders(Borders::ALL)
+                    .title(Title::from("window not large enough").alignment(Alignment::Center)),
+            ),
+            frame_size,
+        );
+    }
+    // Large enough
+    else {
         // Render Output section
         frame.render_widget(
             Block::new()
