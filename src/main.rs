@@ -1,8 +1,10 @@
 use bevy::{app::ScheduleRunnerPlugin, prelude::*};
 use std::time::{Duration, UNIX_EPOCH};
+use tracing::level_filters::LevelFilter;
 use tracing_appender;
-use tracing_subscriber;
+use tracing_subscriber::{self, EnvFilter};
 
+mod commands;
 mod net;
 mod tui;
 
@@ -42,6 +44,7 @@ fn main() {
                 },
             }),
             tui::TuiPlugin,
+            commands::CommandsPlugin,
         ))
         .run();
 
