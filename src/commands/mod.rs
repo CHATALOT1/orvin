@@ -5,8 +5,10 @@ use linkme::distributed_slice;
 use std::fmt::{self, Debug};
 
 mod events;
+mod macros;
 
 pub use events::*;
+pub(crate) use macros::*;
 
 /// Commands that are always available to run
 #[distributed_slice]
@@ -67,31 +69,42 @@ pub fn get_global_command(name: &str) -> Option<&'static dyn Command> {
 
 // TODO: Proc macro for the below.
 
-#[cfg(feature = "test-command")]
-#[derive(Clone)]
-pub struct TestCommand;
+// #[cfg(feature = "test-command")]
+// #[derive(Clone)]
+// pub struct TestCommand;
+
+// #[cfg(feature = "test-command")]
+// #[async_trait]
+// impl Command for TestCommand {
+//     fn name(&self) -> &'static str {
+//         "test"
+//     }
+//     fn summary(&self) -> &'static str {
+//         "Temporary command for testing and building the commands system"
+//     }
+
+//     async fn execute(
+//         &self,
+//         context: &CommandContext,
+//         args: String,
+//         _world: &mut World,
+//     ) -> Result<(), CommandError> {
+//         context.output_append(&format!("Hello {}", args));
+//         Ok(())
+//     }
+// }
+
+// #[cfg(feature = "test-command")]
+// #[distributed_slice(GLOBAL_COMMANDS)]
+// static TEST_COMMAND: &'static dyn Command = &TestCommand;
 
 #[cfg(feature = "test-command")]
-#[async_trait]
-impl Command for TestCommand {
-    fn name(&self) -> &'static str {
-        "test"
-    }
-    fn summary(&self) -> &'static str {
-        "Temporary command for testing and building the commands system"
-    }
-
-    async fn execute(
-        &self,
-        context: &CommandContext,
-        args: String,
-        _world: &mut World,
-    ) -> Result<(), CommandError> {
-        context.output_append(&format!("Hello {}", args));
+define_global_command!(
+    TestCommand,
+    "test",
+    "Temporary command for testing and building the commands system",
+    |_, ctx: &CommandContext, args, _| {
+        ctx.output_append(&format!("Hello {}", args));
         Ok(())
     }
-}
-
-#[cfg(feature = "test-command")]
-#[distributed_slice(GLOBAL_COMMANDS)]
-static TEST_COMMAND: &'static dyn Command = &TestCommand;
+);
