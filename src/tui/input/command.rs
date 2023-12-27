@@ -1,3 +1,4 @@
+use crate::commands::{get_command, CommandIssued};
 use bevy::prelude::*;
 use crossterm::event::{Event, KeyCode, KeyEventKind, KeyModifiers};
 
@@ -16,9 +17,11 @@ impl CommandInputState {
     }
 }
 
+// TODO: Up arrow for previous commands
 pub fn handle_command_input(
     mut input_reader: EventReader<super::InputEvent>,
     mut command_input_state: ResMut<CommandInputState>,
+    mut command_issued: EventWriter<CommandIssued>,
 ) {
     for event in input_reader.read() {
         if let Event::Key(key_event) = event.0 {
@@ -28,6 +31,25 @@ pub fn handle_command_input(
                         let pos = command_input_state.cursor_pos.clone();
                         command_input_state.content.insert(pos, c);
                         command_input_state.shift_cursor(1);
+                    }
+                    (KeyCode::Enter, _) => {
+                        let mut input = command_input_state.content.split_whitespace();
+
+                        if let Some(command_name) = input.next() {
+                            command_issued.send(match get_command(command_name) {
+                                Some(command) => CommandIssued::Command {
+                                    command: command,
+                                    args: input.collect(),
+                                },
+                                None => CommandIssued::Invalid {
+                                    text: command_input_state.content.clone(),
+                                },
+                            });
+                        } else {
+                            break;
+                        }
+
+                        *command_input_state = CommandInputState::default();
                     }
                     (KeyCode::Backspace, _) | (KeyCode::Char('h'), KeyModifiers::CONTROL) => {
                         let pos = command_input_state.cursor_pos.clone();
