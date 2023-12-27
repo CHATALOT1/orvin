@@ -3081,6 +3081,7 @@ dependencies = [
  "bevy",
  "crossterm",
  "futures",
+ "itertools 0.12.0",
  "lightyear",
  "linkme",
  "ratatui",

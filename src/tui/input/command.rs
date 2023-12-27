@@ -1,6 +1,7 @@
 use crate::commands::{get_command, CommandIssued};
 use bevy::prelude::*;
 use crossterm::event::{Event, KeyCode, KeyEventKind, KeyModifiers};
+use itertools::Itertools;
 
 #[derive(Resource, Default)]
 pub struct CommandInputState {
@@ -39,7 +40,7 @@ pub fn handle_command_input(
                             command_issued.send(match get_command(command_name) {
                                 Some(command) => CommandIssued::Command {
                                     command: command,
-                                    args: input.collect(),
+                                    args: input.join(" "),
                                 },
                                 None => CommandIssued::Invalid {
                                     text: command_input_state.content.clone(),
