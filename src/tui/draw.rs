@@ -1,20 +1,49 @@
 use super::{input::CommandInputState, Terminal};
-use bevy::{
-    ecs::system::{Res, ResMut},
-    time::Time,
-};
+use crate::commands::CommandIssued;
+use bevy::prelude::*;
 use ratatui::{
     layout::Rect,
     prelude::*,
-    style::Color,
+    style::{Color, Style},
     widgets::{block::Title, Block, Borders, Paragraph, Wrap},
 };
+
+pub struct CommandFeedback {
+    pub timer: Timer,
+    pub color: Color,
+}
+impl Default for CommandFeedback {
+    fn default() -> Self {
+        Self {
+            timer: Timer::from_seconds(0.8, TimerMode::Once),
+            color: Color::default(),
+        }
+    }
+}
 
 pub fn render_system(
     mut terminal: ResMut<Terminal>,
     command_input_state: Res<CommandInputState>,
+    mut command_issued: EventReader<CommandIssued>,
     time: Res<Time>,
+    mut command_feedback: Local<CommandFeedback>,
 ) {
+    command_feedback.timer.tick(time.delta());
+
+    if let Some(event) = command_issued.read().next() {
+        command_feedback.timer.reset();
+        command_feedback.color = match event {
+            CommandIssued::Command {
+                command: _,
+                args: _,
+            } => Color::Green,
+            CommandIssued::Invalid { text: _ } => Color::Red,
+        };
+    }
+    if command_feedback.timer.finished() {
+        command_feedback.color = Color::default();
+    };
+
     terminal
         .0
         .draw(|frame| {
@@ -22,12 +51,18 @@ pub fn render_system(
                 frame,
                 &command_input_state,
                 time.elapsed_seconds() % 1. >= 0.5,
+                command_feedback.color,
             )
         })
         .expect("Failed to draw terminal");
 }
 
-fn render(frame: &mut Frame, input_state: &CommandInputState, cursor_visible: bool) {
+fn render(
+    frame: &mut Frame,
+    input_state: &CommandInputState,
+    cursor_visible: bool,
+    input_section_colour: Color,
+) {
     let frame_size = frame.size();
 
     // Display error if window is too small
@@ -96,7 +131,9 @@ fn render(frame: &mut Frame, input_state: &CommandInputState, cursor_visible: bo
             } else {
                 Line::from(input_state.content.clone())
             })
-            .block(Block::new().borders(Borders::ALL).title("Input Command")),
+            .fg(Color::default())
+            .block(Block::new().borders(Borders::ALL).title("Input Command"))
+            .fg(input_section_colour),
             input_block_rect,
         );
 
