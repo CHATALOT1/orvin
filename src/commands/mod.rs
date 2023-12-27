@@ -3,6 +3,10 @@ use bevy::prelude::*;
 use linkme::distributed_slice;
 use std::fmt;
 
+mod events;
+
+pub use events::*;
+
 #[distributed_slice]
 pub static GENERAL_COMMANDS: [Command];
 
@@ -44,31 +48,6 @@ pub fn get_command(name: &str) -> Option<&'static Command> {
         .iter()
         .filter(|cmd| cmd.name == name)
         .next()
-}
-
-/// Issue a (potentially invalid) command
-#[derive(Event)]
-pub enum CommandIssued {
-    Command {
-        command: &'static Command,
-        args: String,
-    },
-    Invalid {
-        text: String,
-    },
-}
-
-pub fn log_issued_commands(mut reader: EventReader<CommandIssued>) {
-    for event in reader.read() {
-        match event {
-            CommandIssued::Command { command, args } => {
-                debug!("Command '{}' with args '{}' issued.", command.name, args);
-            }
-            CommandIssued::Invalid { text } => {
-                debug!("Invalid Command '{}' issued.", text);
-            }
-        }
-    }
 }
 
 #[cfg(feature = "test-command")]
