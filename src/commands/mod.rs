@@ -67,37 +67,6 @@ pub fn get_global_command(name: &str) -> Option<&'static dyn Command> {
         .cloned()
 }
 
-// TODO: Proc macro for the below.
-
-// #[cfg(feature = "test-command")]
-// #[derive(Clone)]
-// pub struct TestCommand;
-
-// #[cfg(feature = "test-command")]
-// #[async_trait]
-// impl Command for TestCommand {
-//     fn name(&self) -> &'static str {
-//         "test"
-//     }
-//     fn summary(&self) -> &'static str {
-//         "Temporary command for testing and building the commands system"
-//     }
-
-//     async fn execute(
-//         &self,
-//         context: &CommandContext,
-//         args: String,
-//         _world: &mut World,
-//     ) -> Result<(), CommandError> {
-//         context.output_append(&format!("Hello {}", args));
-//         Ok(())
-//     }
-// }
-
-// #[cfg(feature = "test-command")]
-// #[distributed_slice(GLOBAL_COMMANDS)]
-// static TEST_COMMAND: &'static dyn Command = &TestCommand;
-
 #[cfg(feature = "test-command")]
 define_global_command!(
     TestCommand,
