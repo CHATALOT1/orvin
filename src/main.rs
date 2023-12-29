@@ -10,7 +10,7 @@ mod utils;
 fn main() {
     utils::setup_global_tracing_subscriber(LevelFilter::DEBUG);
 
-    // Set up panic hook to restore terminal
+    // Set up panic hook to restore terminal and log the panic
     let original_hook = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |panic_info| {
         error!("Panicked! Restoring terminal. Panic details logged below.");
