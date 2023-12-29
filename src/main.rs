@@ -1,36 +1,19 @@
 use bevy::{app::ScheduleRunnerPlugin, prelude::*};
-use std::time::{Duration, UNIX_EPOCH};
+use std::time::Duration;
 use tracing::level_filters::LevelFilter;
-use tracing_appender;
-use tracing_subscriber::{self, EnvFilter};
 
 mod commands;
 mod net;
 mod tui;
+mod utils;
 
 fn main() {
-    // Set up tracing subscriber
-    tracing_subscriber::fmt()
-        .with_writer(tracing_appender::rolling::never(
-            "logs",
-            format!(
-                "{:#?}.log",
-                std::time::SystemTime::now()
-                    .duration_since(UNIX_EPOCH)
-                    .expect("System time should not be before the Unix Epoch")
-            ),
-        ))
-        .with_env_filter(
-            EnvFilter::builder()
-                .with_default_directive(LevelFilter::DEBUG.into())
-                .from_env_lossy(),
-        )
-        .with_ansi(false)
-        .init();
+    utils::setup_global_tracing_subscriber(LevelFilter::DEBUG);
 
     // Set up panic hook to restore terminal
     let original_hook = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |panic_info| {
+        error!("Panicked! Restoring terminal.");
         tui::restore_terminal();
         original_hook(panic_info);
     }));
@@ -40,6 +23,7 @@ fn main() {
         .add_plugins((
             MinimalPlugins.set(ScheduleRunnerPlugin {
                 run_mode: bevy::app::RunMode::Loop {
+                    // We add a tiny wait time to prevent unnecessary resource consumption.
                     wait: Some(Duration::from_secs_f32(0.0005)),
                 },
             }),
@@ -50,4 +34,5 @@ fn main() {
 
     // Restore terminal before program execution finished
     tui::restore_terminal();
+    info!("Program exiting...");
 }
