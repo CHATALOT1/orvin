@@ -13,8 +13,9 @@ fn main() {
     // Set up panic hook to restore terminal
     let original_hook = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |panic_info| {
-        error!("Panicked! Restoring terminal.");
+        error!("Panicked! Restoring terminal. Panic details logged below.");
         tui::restore_terminal();
+        error!("{}", panic_info);
         original_hook(panic_info);
     }));
 
