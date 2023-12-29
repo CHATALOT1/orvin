@@ -3091,6 +3091,7 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "bevy",
+ "chrono",
  "crossterm",
  "futures",
  "itertools 0.12.0",
