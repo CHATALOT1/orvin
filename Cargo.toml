@@ -5,6 +5,9 @@ edition = "2021"
 license = "AGPL-3.0-or-later"
 
 [features]
+# Feature to enable all of the features useful in development
+dev = ["test-command", "bevy/dynamic_linking"]
+
 # Enables a testing command that does nothing for development purposes (likely temporary)
 test-command = []
 

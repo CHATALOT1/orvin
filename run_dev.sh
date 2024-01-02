@@ -1,1 +1,1 @@
-cargo run --bin orvin -F bevy/dynamic_linking -F orvin/test-command
+cargo run --bin orvin -F orvin/dev
