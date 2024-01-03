@@ -1,1 +1,1 @@
-cargo run --bin orvin -F orvin/dev
+cargo run --bin client -F orvin/dev

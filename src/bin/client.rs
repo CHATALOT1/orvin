@@ -1,11 +1,7 @@
 use bevy::{app::ScheduleRunnerPlugin, prelude::*};
+use orvin::{commands, tui, utils};
 use std::time::Duration;
 use tracing::Level;
-
-mod commands;
-mod net;
-mod tui;
-mod utils;
 
 fn main() {
     utils::setup_global_tracing_subscriber(Level::DEBUG);
