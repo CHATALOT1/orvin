@@ -1,8 +1,8 @@
-use tracing::level_filters::LevelFilter;
+use tracing::Level;
 use tracing_appender;
 use tracing_subscriber::{self, EnvFilter};
 
-pub fn setup_global_tracing_subscriber(default_log_level: LevelFilter) {
+pub fn setup_global_tracing_subscriber(default_log_level: Level) {
     tracing_subscriber::fmt()
         .with_writer(tracing_appender::rolling::never(
             "logs",

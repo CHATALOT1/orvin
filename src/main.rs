@@ -1,6 +1,6 @@
 use bevy::{app::ScheduleRunnerPlugin, prelude::*};
 use std::time::Duration;
-use tracing::level_filters::LevelFilter;
+use tracing::Level;
 
 mod commands;
 mod net;
@@ -8,7 +8,7 @@ mod tui;
 mod utils;
 
 fn main() {
-    utils::setup_global_tracing_subscriber(LevelFilter::DEBUG);
+    utils::setup_global_tracing_subscriber(Level::DEBUG);
 
     // Set up panic hook to restore terminal and log the panic
     let original_hook = std::panic::take_hook();
