@@ -1,5 +1,4 @@
 //! General and specific code for every Command in the game. Not to be confused with Bevy Commands.
-use async_trait::async_trait;
 use bevy::prelude::*;
 use linkme::distributed_slice;
 use std::fmt::{self, Debug};
@@ -24,7 +23,7 @@ impl Plugin for CommandsPlugin {
 
 /// A command that can be ran by a player.
 #[typetag::serde]
-#[async_trait]
+#[async_trait::async_trait]
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
     fn summary(&self) -> &'static str;
