@@ -22,9 +22,9 @@ impl Plugin for CommandsPlugin {
     }
 }
 
-/// A command that can be ran by a player. 'static requirement may be temporary.
+/// A command that can be ran by a player.
 #[async_trait]
-pub trait Command: Send + Sync + 'static {
+pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
     fn summary(&self) -> &'static str;
 
