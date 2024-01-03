@@ -5,9 +5,10 @@ macro_rules! define_global_command {
             mod [<_ $ident _MOD>] {
                 use crate::commands::{Command, CommandContext, CommandError, GLOBAL_COMMANDS};
 
-                #[derive(Clone)]
+                #[derive(Clone, serde::Deserialize, serde::Serialize)]
                 pub struct $ident;
 
+                #[typetag::serde]
                 #[async_trait::async_trait]
                 impl Command for $ident {
                     fn name(&self) -> &'static str {

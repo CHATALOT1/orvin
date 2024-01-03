@@ -26,6 +26,7 @@ serde = "1.0.193"
 tracing = "0.1.40"
 tracing-appender = "0.2.3"
 tracing-subscriber = "0.3.18"
+typetag = "0.2.15"
 
 [profile.dev]
 opt-level = 1

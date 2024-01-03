@@ -23,6 +23,7 @@ impl Plugin for CommandsPlugin {
 }
 
 /// A command that can be ran by a player.
+#[typetag::serde]
 #[async_trait]
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
