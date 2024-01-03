@@ -5,7 +5,7 @@ macro_rules! define_global_command {
             mod [<_ $ident _MOD>] {
                 use crate::commands::{Command, CommandContext, CommandError, GLOBAL_COMMANDS};
 
-                #[derive(Clone, serde::Deserialize, serde::Serialize)]
+                #[derive(Clone, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
                 pub struct $ident;
 
                 #[typetag::serde]
