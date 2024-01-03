@@ -24,7 +24,7 @@ impl Plugin for CommandsPlugin {
 /// A command that can be ran by a player.
 #[typetag::serde]
 #[async_trait::async_trait]
-pub trait Command: Send + Sync {
+pub trait Command: Send + Sync + dyn_clone::DynClone {
     fn name(&self) -> &'static str;
     fn summary(&self) -> &'static str;
 
@@ -35,12 +35,12 @@ pub trait Command: Send + Sync {
         world: &mut World,
     ) -> Result<(), CommandError>;
 }
-
 impl Debug for dyn Command {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(self.name())
     }
 }
+dyn_clone::clone_trait_object!(Command);
 
 pub struct CommandContext {
     pub output: std::sync::RwLock<String>,
