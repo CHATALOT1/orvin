@@ -30,7 +30,9 @@ pub fn render_system(
 ) {
     command_feedback.timer.tick(time.delta());
 
-    if let Some(event) = command_issued.read().next() {
+    // If a command was just issued, determine current input section colour accordingly.
+    // Otherwise, reset colour if last command was issued long enough ago.
+    if let Some(event) = command_issued.read().last() {
         command_feedback.timer.reset();
         command_feedback.color = match event {
             CommandIssued::Command {

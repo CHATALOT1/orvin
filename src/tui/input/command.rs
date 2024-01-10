@@ -38,7 +38,7 @@ pub fn handle_command_input(
 
                         // If there is no non-whitespace text in the current input, ignore this.
                         let Some(command_name) = input.next() else {
-                            break;
+                            continue;
                         };
 
                         command_issued.send(match get_global_command(command_name) {
