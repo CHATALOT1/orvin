@@ -66,6 +66,7 @@ fn render(
 
     // Especially small
     if frame_size.width < 30 {
+        // Best attempt to fit this text into the player's view, so that they can correct it.
         frame.render_widget(
             Paragraph::new("window not large enough")
                 .alignment(Alignment::Center)
