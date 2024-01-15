@@ -9,7 +9,6 @@ macro_rules! define_global_command {
                 pub struct $ident;
 
                 #[typetag::serde]
-                #[async_trait::async_trait]
                 impl Command for $ident {
                     fn name(&self) -> &'static str {
                         $name
@@ -18,7 +17,7 @@ macro_rules! define_global_command {
                         $summary
                     }
 
-                    async fn execute(
+                    fn execute(
                         &self,
                         context: &CommandContext,
                         args: String,

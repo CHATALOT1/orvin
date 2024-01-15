@@ -12,7 +12,6 @@ dev = ["test-command", "bevy/dynamic_linking"]
 test-command = []
 
 [dependencies]
-async-trait = "0.1.75"
 bevy = "0.12.1"
 chrono = "0.4.31"
 crossterm = { version = "0.27.0", features = ["event-stream"] }

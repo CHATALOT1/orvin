@@ -24,12 +24,11 @@ impl Plugin for CommandsPlugin {
 
 /// A command that can be ran by a player.
 #[typetag::serde]
-#[async_trait::async_trait]
 pub trait Command: Send + Sync + dyn_clone::DynClone + DynEq {
     fn name(&self) -> &'static str;
     fn summary(&self) -> &'static str;
 
-    async fn execute(
+    fn execute(
         &self,
         context: &CommandContext,
         args: String,
