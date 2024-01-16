@@ -1,11 +1,10 @@
 use bevy::prelude::*;
 use crossterm::{
-    cursor::Show,
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use ratatui::prelude::*;
-use std::io::{stderr, stdout, Stdout};
+use std::io::{stdout, Stdout};
 
 mod draw;
 mod input;
