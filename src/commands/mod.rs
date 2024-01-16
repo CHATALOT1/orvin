@@ -28,12 +28,7 @@ pub trait Command: Send + Sync + dyn_clone::DynClone + DynEq {
     fn name(&self) -> &'static str;
     fn summary(&self) -> &'static str;
 
-    fn execute(
-        &self,
-        context: &CommandContext,
-        args: String,
-        world: &mut World,
-    ) -> Result<(), CommandError>;
+    fn execute(&self, context: &CommandContext) -> Result<(), CommandError>;
 }
 impl Debug for dyn Command {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -45,6 +40,7 @@ dyn_eq::eq_trait_object!(Command);
 
 pub struct CommandContext {
     pub output: std::sync::RwLock<String>,
+    pub args: String,
 }
 impl CommandContext {
     pub(self) fn output_append(&self, text: &str) {
@@ -73,8 +69,8 @@ define_global_command!(
     TestCommand,
     "test",
     "Temporary command for testing and building the commands system",
-    |_, ctx: &CommandContext, args, _| {
-        ctx.output_append(&format!("Hello {}", args));
+    |ctx: &CommandContext| {
+        ctx.output_append(&format!("Hello {}", ctx.args));
         Ok(())
     }
 );

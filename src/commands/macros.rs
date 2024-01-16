@@ -17,13 +17,8 @@ macro_rules! define_global_command {
                         $summary
                     }
 
-                    fn execute(
-                        &self,
-                        context: &CommandContext,
-                        args: String,
-                        world: &mut bevy::prelude::World,
-                    ) -> Result<(), CommandError> {
-                        ($exec)(self, context, args, world)
+                    fn execute(&self, context: &CommandContext) -> Result<(), CommandError> {
+                        ($exec)(context)
                     }
                 }
 
