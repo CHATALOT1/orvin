@@ -34,13 +34,7 @@ pub fn setup(mut commands: Commands) {
 }
 
 pub fn restore_terminal() {
-    if disable_raw_mode().is_err() {
-        println!("Failed to disable raw mode.");
-    }
-    if execute!(stderr(), LeaveAlternateScreen).is_err() {
-        println!("unable to switch to main screen");
-    }
-    if execute!(stderr(), Show).is_err() {
-        println!("unable to show cursor");
-    }
+    let mut stdo = stdout();
+    disable_raw_mode().expect("Failed to disable raw mode.");
+    execute!(stdo, LeaveAlternateScreen).expect("unable to switch to main screen");
 }
