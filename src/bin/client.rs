@@ -2,9 +2,12 @@ use bevy::{app::ScheduleRunnerPlugin, prelude::*};
 use orvin::{commands, tui, utils};
 use std::time::Duration;
 use tracing::Level;
+use tracing_subscriber::prelude::*;
 
 fn main() {
-    utils::setup_global_tracing_subscriber(Level::DEBUG);
+    tracing_subscriber::registry()
+        .with(utils::tracing_file_layer(Level::DEBUG))
+        .init();
 
     // Set up panic hook to restore terminal and log the panic
     let original_hook = std::panic::take_hook();
