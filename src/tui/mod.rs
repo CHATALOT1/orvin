@@ -27,7 +27,9 @@ pub fn setup(mut commands: Commands) {
     let mut stdo = stdout();
     enable_raw_mode().expect("failed to enable raw mode");
     execute!(stdo, EnterAlternateScreen).expect("unable to enter alternate screen");
-    let term = RatatuiTerminal::new(CrosstermBackend::new(stdo)).expect("creating terminal failed");
+    let mut term =
+        RatatuiTerminal::new(CrosstermBackend::new(stdo)).expect("creating terminal failed");
+    term.hide_cursor().expect("Unable to hide terminal cursor");
 
     commands.insert_resource(Terminal(term));
 }
