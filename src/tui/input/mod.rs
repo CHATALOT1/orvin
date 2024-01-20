@@ -12,7 +12,7 @@ pub struct InputPlugin;
 impl Plugin for InputPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<InputEvent>()
-            .add_systems(First, send_events)
+            .add_systems(PreUpdate, send_events)
             .init_resource::<CommandInputState>()
             .add_systems(Update, (handle_quit, command::handle_command_input));
     }
