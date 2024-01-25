@@ -2837,7 +2837,6 @@ dependencies = [
  "dyn-clone",
  "dyn-eq",
  "futures",
- "itertools",
  "linkme",
  "paste",
  "ratatui",
