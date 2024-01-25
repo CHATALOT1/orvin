@@ -1,5 +1,8 @@
-use super::{input::CommandInputState, Terminal};
-use crate::commands::CommandIssued;
+use super::{
+    input::{command::CommandInputState, events::InvalidCommandSubmitted},
+    Terminal,
+};
+use crate::commands::IssueCommand;
 use bevy::prelude::*;
 use ratatui::{
     layout::Rect,
@@ -24,23 +27,22 @@ impl Default for CommandFeedback {
 pub fn render_system(
     mut terminal: ResMut<Terminal>,
     command_input_state: Res<CommandInputState>,
-    mut command_issued: EventReader<CommandIssued>,
+    mut command_issued: EventReader<IssueCommand>,
+    mut invalid_command_submitted: EventReader<InvalidCommandSubmitted>,
     time: Res<Time>,
     mut command_feedback: Local<CommandFeedback>,
 ) {
     command_feedback.timer.tick(time.delta());
 
-    // If a command was just issued, determine current input section colour accordingly.
-    // Otherwise, reset colour if last command was issued long enough ago.
-    if let Some(event) = command_issued.read().last() {
+    // If a valid command was just issued, or an invalid command submitted, determine current
+    // input section colour accordingly. Otherwise, reset colour if last command was issued long
+    // enough ago.
+    if invalid_command_submitted.read().last().is_some() {
         command_feedback.timer.reset();
-        command_feedback.color = match event {
-            CommandIssued::Command {
-                command: _,
-                args: _,
-            } => Color::Green,
-            CommandIssued::Invalid { text: _ } => Color::Red,
-        };
+        command_feedback.color = Color::Red;
+    } else if command_issued.read().last().is_some() {
+        command_feedback.timer.reset();
+        command_feedback.color = Color::Green;
     } else if command_feedback.timer.finished() {
         command_feedback.color = Color::default();
     };

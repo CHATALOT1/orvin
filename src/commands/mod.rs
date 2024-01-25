@@ -2,22 +2,28 @@
 use bevy::prelude::*;
 use dyn_eq::DynEq;
 use linkme::distributed_slice;
-use std::fmt::{self, Debug};
+use std::fmt;
 
 mod events;
 mod macros;
 
 pub use events::*;
-pub(crate) use macros::*;
+use macros::define_global_command;
+
+pub(self) struct GlobalCommand {
+    command: &'static dyn Command,
+    name: &'static str,
+}
 
 /// Commands that are always available to run
 #[distributed_slice]
-pub static GLOBAL_COMMANDS: [&'static dyn Command];
+pub static GLOBAL_COMMANDS: [GlobalCommand];
 
 pub struct CommandsPlugin;
 impl Plugin for CommandsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<CommandIssued>()
+        app.add_event::<IssueCommand>()
+            .add_systems(Startup, setup_global_commands)
             .add_systems(Update, log_issued_commands);
     }
 }
@@ -25,15 +31,7 @@ impl Plugin for CommandsPlugin {
 /// A command that can be ran by a player.
 #[typetag::serde]
 pub trait Command: Send + Sync + dyn_clone::DynClone + DynEq {
-    fn name(&self) -> &'static str;
-    fn summary(&self) -> &'static str;
-
     fn execute(&self, context: &CommandContext) -> Result<(), CommandError>;
-}
-impl Debug for dyn Command {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.name())
-    }
 }
 dyn_clone::clone_trait_object!(Command);
 dyn_eq::eq_trait_object!(Command);
@@ -57,20 +55,19 @@ impl From<fmt::Error> for CommandError {
     }
 }
 
-pub fn get_global_command(name: &str) -> Option<&'static dyn Command> {
-    GLOBAL_COMMANDS
-        .iter()
-        .find(|cmd| cmd.name() == name)
-        .cloned()
+#[derive(Component)]
+pub enum AvailableCommand {
+    Static(&'static dyn Command),
+}
+
+fn setup_global_commands(mut commands: Commands) {
+    for cmd in GLOBAL_COMMANDS {
+        commands.spawn((Name::new(cmd.name), AvailableCommand::Static(cmd.command)));
+    }
 }
 
 #[cfg(feature = "test-command")]
-define_global_command!(
-    TestCommand,
-    "test",
-    "Temporary command for testing and building the commands system",
-    |ctx: &CommandContext| {
-        ctx.output_append(&format!("Hello {}", ctx.args));
-        Ok(())
-    }
-);
+define_global_command!(TestCommand, "test", |ctx: &CommandContext| {
+    ctx.output_append(&format!("Hello {}", ctx.args));
+    Ok(())
+});

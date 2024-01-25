@@ -6,15 +6,24 @@ use crossterm::event::{poll, read, Event as CrosstermEvent, KeyCode, KeyModifier
 use std::time::Duration;
 
 pub mod command;
-pub use command::CommandInputState;
+pub mod events;
 
 pub struct InputPlugin;
 impl Plugin for InputPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<InputEvent>()
+            .add_event::<events::SubmitCommandText>()
+            .add_event::<events::InvalidCommandSubmitted>()
+            .init_resource::<command::CommandInputState>()
             .add_systems(PreUpdate, send_events)
-            .init_resource::<CommandInputState>()
-            .add_systems(Update, (handle_quit, command::handle_command_input));
+            .add_systems(
+                Update,
+                (
+                    handle_quit,
+                    command::handle_command_input,
+                    command::handle_submitted_commands.after(command::handle_command_input),
+                ),
+            );
     }
 }
 

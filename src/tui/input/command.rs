@@ -1,10 +1,10 @@
-use crate::commands::{get_global_command, CommandIssued};
+use super::events::{InvalidCommandSubmitted, SubmitCommandText};
+use crate::commands::{AvailableCommand, IssueCommand};
 use bevy::prelude::*;
 use crossterm::event::{Event, KeyCode, KeyEventKind, KeyModifiers};
-use itertools::Itertools;
 
 #[derive(Resource, Default)]
-pub struct CommandInputState {
+pub(in crate::tui) struct CommandInputState {
     pub content: String,
     pub cursor_pos: usize,
 }
@@ -19,10 +19,10 @@ impl CommandInputState {
 }
 
 // TODO: Up arrow for previous commands
-pub fn handle_command_input(
+pub(super) fn handle_command_input(
     mut input_reader: EventReader<super::InputEvent>,
     mut command_input_state: ResMut<CommandInputState>,
-    mut command_issued: EventWriter<CommandIssued>,
+    mut submit_command: EventWriter<SubmitCommandText>,
 ) {
     for event in input_reader.read() {
         if let Event::Key(key_event) = event.0 {
@@ -34,23 +34,13 @@ pub fn handle_command_input(
                         command_input_state.shift_cursor(1);
                     }
                     (KeyCode::Enter, _) => {
-                        let mut input = command_input_state.content.split_whitespace();
-
-                        // If there is no non-whitespace text in the current input, ignore this.
-                        let Some(command_name) = input.next() else {
+                        // If the current input is all whitespace, ignore this.
+                        if command_input_state.content.split_whitespace().next() == None {
                             continue;
                         };
 
-                        command_issued.send(match get_global_command(command_name) {
-                            Some(command) => CommandIssued::Command {
-                                command: command,
-                                args: input.join(" "),
-                            },
-                            None => CommandIssued::Invalid {
-                                text: command_input_state.content.clone(),
-                            },
-                        });
-
+                        // Submit the current content and reset the input state
+                        submit_command.send(SubmitCommandText(command_input_state.content.clone()));
                         *command_input_state = CommandInputState::default();
                     }
                     (KeyCode::Backspace, _) | (KeyCode::Char('h'), KeyModifiers::CONTROL) => {
@@ -81,6 +71,36 @@ pub fn handle_command_input(
                     _ => {}
                 }
             }
+        }
+    }
+}
+
+pub(super) fn handle_submitted_commands(
+    mut submitted: EventReader<SubmitCommandText>,
+    commands: Query<(Entity, &Name), Has<AvailableCommand>>,
+    mut issue_command: EventWriter<IssueCommand>,
+    mut submit_invalid_command: EventWriter<InvalidCommandSubmitted>,
+) {
+    for event in submitted.read() {
+        let mut args = event.0.split_whitespace();
+
+        // This should never be None, even if the string is empty
+        let Some(submitted_name) = args.next() else {
+            warn!("A string containing only whitespace was submitted as a command");
+            continue;
+        };
+
+        if let Some((cmd_entity, _)) = commands
+            .iter()
+            .find(|(_, name)| name.as_str() == submitted_name)
+        {
+            issue_command.send(IssueCommand {
+                command: cmd_entity,
+                text: event.0.clone(),
+            });
+        } else {
+            debug!("Invalid command text \"{}\" submitted", event.0);
+            submit_invalid_command.send(InvalidCommandSubmitted);
         }
     }
 }
