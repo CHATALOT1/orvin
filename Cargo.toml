@@ -8,7 +8,7 @@ license = "AGPL-3.0-or-later"
 # Feature to enable all of the features useful in development
 dev = ["test-command", "bevy/dynamic_linking"]
 
-# Enables a testing command that does nothing for development purposes (likely temporary)
+# Enables a testing command that does very little, for development purposes (likely temporary)
 test-command = []
 
 [dependencies]
