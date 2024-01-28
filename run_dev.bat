@@ -1,1 +1,1 @@
-cargo run --bin client -F orvin/dev
+cargo run --bin player -F orvin/dev
