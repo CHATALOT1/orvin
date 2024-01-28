@@ -5,25 +5,15 @@ use linkme::distributed_slice;
 use std::fmt;
 
 mod events;
-mod macros;
+mod global;
 
 pub use events::*;
-use macros::define_global_command;
-
-pub(self) struct GlobalCommand {
-    command: &'static dyn Command,
-    name: &'static str,
-}
-
-/// Commands that are always available to run
-#[distributed_slice]
-pub static GLOBAL_COMMANDS: [GlobalCommand];
 
 pub struct CommandsPlugin;
 impl Plugin for CommandsPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<IssueCommand>()
-            .add_systems(Startup, setup_global_commands)
+            .add_systems(Startup, global::setup_global_commands)
             .add_systems(Update, log_issued_commands);
     }
 }
@@ -59,15 +49,3 @@ impl From<fmt::Error> for CommandError {
 pub enum AvailableCommand {
     Static(&'static dyn Command),
 }
-
-fn setup_global_commands(mut commands: Commands) {
-    for cmd in GLOBAL_COMMANDS {
-        commands.spawn((Name::new(cmd.name), AvailableCommand::Static(cmd.command)));
-    }
-}
-
-#[cfg(feature = "test-command")]
-define_global_command!(TestCommand, "test", |ctx: &CommandContext| {
-    ctx.output_append(&format!("Hello {}", ctx.args));
-    Ok(())
-});
