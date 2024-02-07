@@ -24,6 +24,7 @@ jobs:
             ~/.cargo/git/db
             target/
           key: ubuntu-cargo-build-${{ hashFiles('**/Cargo.toml') }}
+      - uses: dtolnay/rust-toolchain@stable
       - name: Build
         run: cargo build --verbose
       - name: Run tests
