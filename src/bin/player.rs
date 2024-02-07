@@ -9,7 +9,7 @@ fn main() {
         .with(utils::tracing_file_layer(Level::DEBUG))
         .init();
 
-    info!("Starting Client");
+    info!("Starting Player Client");
 
     // Set up panic hook to restore terminal and log the panic
     let original_hook = std::panic::take_hook();
