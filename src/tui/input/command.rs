@@ -77,7 +77,7 @@ pub(super) fn handle_command_input(
 
 pub(super) fn handle_submitted_commands(
     mut submitted: EventReader<SubmitCommandText>,
-    commands: Query<(Entity, &Name), Has<AvailableCommand>>,
+    query: Query<(Entity, &Name), Has<AvailableCommand>>,
     mut issue_command: EventWriter<IssueCommand>,
     mut submit_invalid_command: EventWriter<InvalidCommandSubmitted>,
 ) {
@@ -89,7 +89,7 @@ pub(super) fn handle_submitted_commands(
             continue;
         };
 
-        if let Some((cmd_entity, _)) = commands
+        if let Some((cmd_entity, _)) = query
             .iter()
             .find(|(_, name)| name.as_str() == submitted_name)
         {
