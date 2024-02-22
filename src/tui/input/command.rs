@@ -77,20 +77,19 @@ pub(super) fn handle_command_input(
 
 pub(super) fn handle_submitted_commands(
     mut submitted: EventReader<SubmitCommandText>,
-    commands: Query<(Entity, &Name), Has<AvailableCommand>>,
+    query: Query<(Entity, &Name), Has<AvailableCommand>>,
     mut issue_command: EventWriter<IssueCommand>,
     mut submit_invalid_command: EventWriter<InvalidCommandSubmitted>,
 ) {
     for event in submitted.read() {
         let mut args = event.0.split_whitespace();
 
-        // This should never be None, even if the string is empty
         let Some(submitted_name) = args.next() else {
-            warn!("A string containing only whitespace was submitted as a command");
+            warn!("A string containing only whitespace was submitted as a command: {event:#?}");
             continue;
         };
 
-        if let Some((cmd_entity, _)) = commands
+        if let Some((cmd_entity, _)) = query
             .iter()
             .find(|(_, name)| name.as_str() == submitted_name)
         {
