@@ -84,9 +84,8 @@ pub(super) fn handle_submitted_commands(
     for event in submitted.read() {
         let mut args = event.0.split_whitespace();
 
-        // This should never be None, even if the string is empty
         let Some(submitted_name) = args.next() else {
-            warn!("A string containing only whitespace was submitted as a command");
+            warn!("A string containing only whitespace was submitted as a command: {event:#?}");
             continue;
         };
 
