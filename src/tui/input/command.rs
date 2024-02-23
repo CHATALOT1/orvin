@@ -77,7 +77,7 @@ pub(super) fn handle_command_input(
 
 pub(super) fn handle_submitted_commands(
     mut submitted: EventReader<SubmitCommandText>,
-    query: Query<(Entity, &Name), Has<AvailableCommand>>,
+    query: Query<(Entity, &Name), With<AvailableCommand>>,
     mut issue_command: EventWriter<IssueCommand>,
     mut submit_invalid_command: EventWriter<InvalidCommandSubmitted>,
 ) {
